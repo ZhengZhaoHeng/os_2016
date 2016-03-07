@@ -26,7 +26,6 @@ int malloc(int size)
 		if(current->size >= size)
 			if(current->size > size)
 			{
-				//ListNode* newNode = new ListNode(current->head+size, current->size-size, false);
 				ListNode* newNode = pool_head;
 				pool_head = pool_head->next;
 
