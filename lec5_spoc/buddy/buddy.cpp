@@ -43,7 +43,7 @@ void buildTree(int node, int size, int addr)
 void test(int node)
 {
 	if (node < 0) return;
-	printf("node: %d, size: %d, addr: %d\n", node, tree[node].size, tree[node].addr);
+	printf("node: %d, size: %d, addr: %d, empty: %d, full: %d\n", node, tree[node].size, tree[node].addr, tree[node].empty, tree[node].full);
 	test(tree[node].left);
 	test(tree[node].right);
 }
@@ -63,13 +63,13 @@ int alloc(int node, int size)
 		}
 		else return -1;
 	}
-	int return_addr = search(tree[node].left, size);
+	int return_addr = alloc(tree[node].left, size);
 	if (return_addr >= 0) 
 	{
 		tree[node].empty = false;
 		return return_addr;
 	}
-	return_addr = search(tree[node].right, size);
+	return_addr = alloc(tree[node].right, size);
 	if (return_addr >= 0)
 	{
 		tree[node].empty = false;
@@ -79,12 +79,16 @@ int alloc(int node, int size)
 
 void release(int node, int ptr)
 {
+	if (tree[node].empty) return;
 	if (tree[node].full && tree[node].addr == ptr) 
 	{
 		tree[node].empty = true;
 		tree[node].full = false;
 		return;
 	}
+	if (tree[tree[node].right].addr > ptr) release(tree[node].left, ptr);
+	else release(tree[node].right, ptr);
+	tree[node].empty = tree[tree[node].left].empty & tree[tree[node].right].empty;
 }
 
 int malloc(int size)
@@ -94,7 +98,7 @@ int malloc(int size)
 
 void free(int ptr)
 {
-
+	release(0, ptr);
 }
 
 int main()
@@ -104,5 +108,9 @@ int main()
 	printf("%d\n", malloc(128));
 	printf("%d\n", malloc(256));
 	printf("%d\n", malloc(128));
+	free(640);
+	free(512);
+	printf("%d\n", malloc(200));
+	test(0);
 	return 0;
 }
