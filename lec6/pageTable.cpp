@@ -9,29 +9,30 @@ int data[128][32];
 
 void address_convert(short vaddress)
 {
-	cout<<"Virtual Address "<< hex << vaddress <<':'<<endl;
+	cout<<"Virtual Address 0x"<< hex << vaddress <<':'<<endl;
 	short pde_i = vaddress >> 10;
 	short pde_c = data[17][pde_i];
 	short valid0 = pde_c >> 7;
 	short pfn0 = pde_c & 0x7f;
-	cout<<"--> pde index : "<< hex <<pde_i<<" pde contents:( valid "<< valid0 <<", pfn "<< hex <<pfn0<<" )"<<endl;
+	cout<<"--> pde index : 0x"<< hex <<pde_i<<" pde contents:( valid "<< valid0 <<", pfn 0x"<< hex <<pfn0<<" )"<<endl;
+	//printf("--> pde index:0x%x pde contents:(valid 0x%d, pfn %x)", pde_i, valid0, pfn0);
 	if(valid0 == 0)
-		cout<<"--> Fault (page directory entry not valid)"<<endl;
+		cout<<"    --> Fault (page directory entry not valid)"<<endl;
 	else
 	{
 		short pte_i = (vaddress & 0x03ff) >> 5;
 		short pte_c = data[pfn0][pte_i];
 		short valid1 = pte_c >> 7;
 		short pfn1 = pte_c & 0x7f;
-		cout<<"--> pte index : "<< hex<<pte_i <<" pte contents: ( valid "<<valid1 <<", pfn "<< hex <<pfn1<<" )"<<endl;
+		cout<<"    --> pte index : 0x"<< hex<<pte_i <<" pte contents: ( valid "<<valid1 <<", pfn 0x"<< hex <<pfn1<<" )"<<endl;
 
 		if(valid1 == 0)
-			cout<<"--> Fault (page table entry not valid)"<<endl;
+			cout<<"        --> Fault (page table entry not valid)"<<endl;
 		else
 		{
 			short paddress = pfn1 << 5 + (vaddress & 0x001f);
 			short value = data[pfn1][vaddress & 0x001f];
-			cout<<"--> Translates to Physical Address "<< hex <<paddress<<" --> Value: "<<hex<<value<<endl;
+			cout<<"        --> Translates to Physical Address "<< hex <<paddress<<" --> Value: "<<hex<<value<<endl;
 		}
 	}
 
@@ -59,8 +60,8 @@ void init()
 int main()
 {
 	init();
-	//cout<<data[0][0]<<endl;
-	address_convert(0x6b22);
+	address_convert(0x69dc);
+	address_convert(0x390e);
 	int stop =0;
 	return 0;
 }
