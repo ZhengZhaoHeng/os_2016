@@ -15,7 +15,6 @@ void address_convert(short vaddress)
 	short valid0 = pde_c >> 7;
 	short pfn0 = pde_c & 0x7f;
 	cout<<"--> pde index : 0x"<< hex <<pde_i<<" pde contents:( valid "<< valid0 <<", pfn 0x"<< hex <<pfn0<<" )"<<endl;
-	//printf("--> pde index:0x%x pde contents:(valid 0x%d, pfn %x)", pde_i, valid0, pfn0);
 	if(valid0 == 0)
 		cout<<"    --> Fault (page directory entry not valid)"<<endl;
 	else
@@ -35,9 +34,6 @@ void address_convert(short vaddress)
 			cout<<"        --> Translates to Physical Address "<< hex <<paddress<<" --> Value: "<<hex<<value<<endl;
 		}
 	}
-
-
-	//cout<<valid0<<' '<<pfn0<<' '<<pte_i<<' '<<pte_c<<' '<<valid1<<' '<<pfn1<<endl;
 }
 
 void init()
@@ -52,7 +48,6 @@ void init()
 		fin >> s;
 		fin >> hex >> pn;
 		fin >> c;
-		//cout<< s << pn << c;
 		for(int j=0; j<32; j++)
 			fin >> hex >> data[i][j];
 	}
@@ -62,6 +57,5 @@ int main()
 	init();
 	address_convert(0x69dc);
 	address_convert(0x390e);
-	int stop =0;
 	return 0;
 }
