@@ -14,7 +14,7 @@ void make_table(unsigned int va, unsigned int pa)
 	printf("va 0x%08x, pa 0x%08x\npde_idx 0x%08x, pde_ctx 0x%08x, pte_idx 0x%08x, pte_ctx 0x%08x\n", va, pa, pde_idx, pde_ctx, pte_idx, pte_ctx);
 }
 
-unsigned int main()
+int main()
 {
 	make_table(0xcd82c07c, 0x0c20907c);
 	return 0;
