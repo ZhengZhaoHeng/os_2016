@@ -14,7 +14,6 @@ void lookup_disk(short vaddress)
 	short pde_i = (vaddress >> 10) & 0x7;
 	short pde_c = memory[0x6c][pde_i];
 
-	cout<<hex <<pde_c<<endl;
 	short valid0 = pde_c >> 7;
 	short pfn0 = pde_c & 0x7f;
 	cout<<"--> pde index : 0x"<< hex <<pde_i<<" pde contents:( valid "<< valid0 <<", pfn 0x"<< hex <<pfn0<<" )"<<endl;
@@ -30,9 +29,16 @@ void lookup_disk(short vaddress)
 
 		if(valid1 == 0)
 		{
-			short diskaddress = (pfn1 << 5) + (vaddress & 0x001f);
-			short value = disk[pfn1][vaddress & 0x001f];
-			cout<<"        --> To Disk Sector Address"<< hex << diskaddress <<" --> Value: "<< hex <<value<<endl;
+			if(pfn1 == 0x7f)
+			{
+				cout<<"        --> Neither in memory, nor in disk"<<endl;
+			}
+			else
+			{
+				short diskaddress = (pfn1 << 5) + (vaddress & 0x001f);
+				short value = disk[pfn1][vaddress & 0x001f];
+				cout<<"        --> To Disk Sector Address"<< hex << diskaddress <<" --> Value: "<< hex <<value<<endl;
+			}
 		}
 		else
 		{
