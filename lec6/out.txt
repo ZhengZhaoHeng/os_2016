@@ -1,0 +1,15 @@
+Virtual Address 0x69dc:
+--> pde index : 0x1a pde contents:( valid 1, pfn 0x52 )
+    --> pte index : 0xe pte contents: ( valid 0, pfn 0x7f )
+        --> Fault (page table entry not valid)
+Virtual Address 0x390e:
+--> pde index : 0xe pde contents:( valid 0, pfn 0x7f )
+    --> Fault (page directory entry not valid)
+Virtual Address 0x2c03:
+--> pde index : 0xb pde contents:( valid 1, pfn 0x44 )
+    --> pte index : 0x0 pte contents: ( valid 1, pfn 0x57 )
+        --> Translates to Physical Address 5700 --> Value: 16
+Virtual Address 0x7fd7:
+--> pde index : 0x1f pde contents:( valid 1, pfn 0x12 )
+    --> pte index : 0x1e pte contents: ( valid 0, pfn 0x7f )
+        --> Fault (page table entry not valid)
