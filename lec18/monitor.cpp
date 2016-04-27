@@ -1,11 +1,14 @@
 #include <iostream>
 #include <pthread.h>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
+#include <unistd.h>
 
 using namespace std;
 
 #define MAX_SEATS 100
+#define MAX_ACTION 100
 
 struct ReadingRoom
 {
@@ -23,28 +26,34 @@ ReadingRoom::ReadingRoom()
 	seats = MAX_SEATS;
 }
 
-void enter(ReadingRoom *room)
+void* enter(void *arg)
 {
-	pthread_mutex_lock(room->lock);
-	while(seats == 0)
-		pthread_cond_wait(room->notFull, room->lock);
-	seats --;
-	pthread_cond_signal(room->notEmpty);
-	pthread_mutex_unlock(room->lock);
+	ReadingRoom *room = (ReadingRoom*)arg; 
+	pthread_mutex_lock(&room->lock);
+	while(room->seats == 0)
+		pthread_cond_wait(&room->notFull, &room->lock);
+	room->seats --;
+	pthread_cond_signal(&room->notEmpty);
+	pthread_mutex_unlock(&room->lock);
+	cout<<"One reader enters the reading room!"<<endl;
 }
 
-void leave(ReadingRoom *room)
+void* leave(void *arg)
 {
-	pthread_mutex_lock(room->lock);
-	while(seats == MAX_SEATS)
-		pthread_cond_wait(room->notEmpty, room->lock);
-	seats ++;
-	pthread_cond_signal(room->notFull);
-	pthread_mutex_unlock(room->lock);
+	ReadingRoom *room = (ReadingRoom*)arg; 
+	pthread_mutex_lock(&room->lock);
+	while(room->seats == MAX_SEATS)
+		pthread_cond_wait(&room->notEmpty, &room->lock);
+	room->seats ++;
+	pthread_cond_signal(&room->notFull);
+	pthread_mutex_unlock(&room->lock);
+	cout<<"One reader leaves the reading room!"<<endl;	
 }
 
 int main()
 {
+	ReadingRoom room;
+
 	pthread_t action[MAX_ACTION];
 
 	srand(time(0));
@@ -52,11 +61,10 @@ int main()
 	{
 		int type = rand()%2;
 		if(type == 0)
-			pthread_create(&action[i], NULL, &enter, NULL);
+			pthread_create(&action[i], NULL, &enter, &room);
 		else
-			pthread_create(%action[i], NULL, &leave, NULL);
-		int interval = rand()%5;
-		sleep(interval);
+			pthread_create(&action[i], NULL, &leave, &room);
+		sleep(1);
 	}
 
 	for(int i = 0; i <MAX_ACTION; i++)
