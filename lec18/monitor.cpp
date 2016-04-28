@@ -8,7 +8,7 @@
 using namespace std;
 
 #define MAX_SEATS 4
-#define MAX_ACTION 100
+#define MAX_ACTION 50
 
 struct ReadingRoom
 {
