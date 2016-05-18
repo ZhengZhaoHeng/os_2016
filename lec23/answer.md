@@ -1,0 +1,44 @@
+“磁盘文件复制”的过程大致涉及如下几个层次：
+从用户态程序调用c库的read/write接口，到系统调用接口，
+到虚拟文件系统层，到简单文件系统层，到IO接口层，最后到硬盘驱动层的函数调用关系。
+接下来，我们以读文件为例来详细分析这一调用过程。        
+1.用户程序和标准库:
+```
+read() -> sys_read() -> syscall()  
+```
+syscall()中，通过int软中断进入内核     
+2.系统调用接口层：    
+```
+-> trap() -> trap_dispatch() -> syscall() -> sys_read()    
+```
+3.虚拟文件系统层：
+```
+-> sysfile_read() :检查参数的合法性
+-> file_read()	：在进程的文件列表中寻找指定的文件，检查读写权限等
+-> vop_read() :虚拟文件系统read操作统一接口函数
+```
+4.简单文件系统层：
+```
+-> sfs_read()
+-> sfs_io() :对内存中的该文件inode结构进行互斥操作
+-> sfs_io_nolock() :根据读写文件的起始位置和结束位置，分成3个部分进行读写操作        
+————| 4.1 文件读写的起始位置所在的block
+————| -> sys_rbuf() :根据要求的位置，读写非对齐的block
+————| -> sfs_rwblock_nolock() ：读写一块完整的block
+————| 4.2 文件读写首位位置之间的完整block
+————| -> sys_rblock() -> sys_rwblock() ：读写连续的若干个block
+————| -> sfs_rwblock_nolock() ：读写一块完整的block
+————| 4.3 文件读写的结束位置所在的block
+————| -> sys_rbuf() :根据要求的位置，读写非对齐的block
+————| -> sfs_rwblock_nolock() ：读写一块完整的block
+-> dop_io()　:I/O设备通用接口函数
+```
+5.I/O通用接口层：
+```
+-> disk0_io() :检查参数的合法性
+-> disk0_read_blks_nolock() ：调用驱动函数，连续读取若干个block
+```
+6.设备驱动层：
+```
+-> ide_read_secs() :读取硬盘的扇区
+```
